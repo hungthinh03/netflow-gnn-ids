@@ -26,6 +26,8 @@ Tài liệu liên quan:
 - [Bài báo về NetFlow v3](https://arxiv.org/abs/2503.04404)
 - [Bài báo về bộ đặc trưng NetFlow chuẩn hóa](https://doi.org/10.1007/s11036-021-01843-0)
 
+> Khi sử dụng dữ liệu, hãy trích dẫn đúng phiên bản dataset và công trình tương ứng theo hướng dẫn tại [UQ NIDS Datasets](https://staff.itee.uq.edu.au/marius/NIDS_datasets/).
+
 ### Dataset trong pipeline
 
 Pipeline thực nghiệm hiện sử dụng các nhóm đặc trưng như thời lượng, khối lượng lưu lượng, TTL, kích thước gói tin, truyền lại, cờ TCP, dịch vụ và IAT; tổng cộng 91 đặc trưng theo cấu hình hiện tại.
@@ -166,11 +168,3 @@ Các lệnh trên là entrypoint dự kiến; cần đồng bộ với cấu tr�
 - Không commit dataset chưa được phép phân phối, thông tin xác thực, file `.env`, log chứa dữ liệu nhạy cảm hoặc packet capture không được phép chia sẻ.
 - Đặt các cấu hình riêng trong `.env`; chỉ commit `.env.example`.
 - Chỉ kiểm thử lưu lượng tấn công trong môi trường được phép và có kiểm soát.
-
-## Citation
-
-Khi sử dụng dữ liệu, hãy trích dẫn đúng phiên bản dataset và công trình tương ứng theo hướng dẫn tại [UQ NIDS Datasets](https://staff.itee.uq.edu.au/marius/NIDS_datasets/).
-
-## Project status
-
-Research prototype — đang phát triển pipeline NetFlow-to-Graph, các mô hình phát hiện xâm nhập và giao diện giám sát. Trạng thái triển khai thực tế, khả năng suy luận liên tục và các kết quả đánh giá sẽ được cập nhật theo từng phiên bản.
