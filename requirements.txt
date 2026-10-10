@@ -1,0 +1,40 @@
+# NetFlow Host-Graph IDS - Python dependencies
+# Python 3.11 khuyến nghị.
+# Đây là các khoảng phiên bản tương thích; sau khi môi trường chạy ổn định,
+# hãy khóa phiên bản chính xác bằng: pip freeze > requirements.lock.txt
+#
+# Lưu ý PyTorch: nếu dùng GPU, cài torch theo hướng dẫn CUDA tại
+# https://pytorch.org/get-started/locally/ TRƯỚC khi chạy pip install -r requirements.txt
+
+# --- Xử lý dữ liệu ---
+numpy>=1.26,<3
+pandas>=2.1,<3
+pyarrow>=14.0
+scipy>=1.11
+pyyaml>=6.0
+
+# --- Baseline phi đồ thị ---
+scikit-learn>=1.4,<2
+xgboost>=2.0,<4
+joblib>=1.3
+
+# --- GNN ---
+torch>=2.2,<3
+torch-geometric>=2.5,<3
+
+# --- Trực quan hóa / notebook ---
+matplotlib>=3.8
+seaborn>=0.13
+jupyter>=1.0
+tqdm>=4.66
+
+# --- Dashboard backend ---
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.5
+python-dotenv>=1.0
+
+# --- Kiểm thử / chất lượng mã ---
+pytest>=8.0
+pytest-cov>=4.1
+ruff>=0.3
