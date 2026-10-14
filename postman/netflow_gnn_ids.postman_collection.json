@@ -1,0 +1,381 @@
+{
+  "info": {
+    "_postman_id": "9b6a3a4e-7f24-4f58-9a31-ids-api-collection",
+    "name": "NetFlow GNN IDS API",
+    "description": "Collection for the current FastAPI endpoints. Default baseUrl is http://127.0.0.1:8000. In IDS_MODE=mock, prediction may return 503; unimplemented service methods may return 501.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "flowId",
+      "value": "demo-flow-001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Model",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "health"
+              ]
+            },
+            "description": "Kiểm tra ứng dụng FastAPI."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response is JSON', function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Model status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/model/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "model",
+                "status"
+              ]
+            },
+            "description": "Xem mode và trạng thái model."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response is JSON', function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flows",
+      "item": [
+        {
+          "name": "List flows - 30 minutes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/flows?window=30m&limit=100",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "flows"
+              ],
+              "query": [
+                {
+                  "key": "window",
+                  "value": "30m"
+                },
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            },
+            "description": "Lấy flow gần đây. Có thể trả 501 nếu FlowService chưa được triển khai."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected 200 or 501', function () { pm.expect([200, 501]).to.include(pm.response.code); });",
+                  "pm.test('Response is JSON', function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid window - validation test",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/flows?window=7d&limit=100",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "flows"
+              ],
+              "query": [
+                {
+                  "key": "window",
+                  "value": "7d"
+                },
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            },
+            "description": "Kiểm tra window chỉ nhận 5m, 30m hoặc 1h."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Invalid query returns 422', function () { pm.response.to.have.status(422); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Prediction",
+      "item": [
+        {
+          "name": "Predict flow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/predict",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "predict"
+              ]
+            },
+            "description": "Payload mẫu theo FlowInput hiện tại. IDS_MODE=mock thường trả 503; predictor chưa cài đặt có thể trả 501.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"src\": \"192.168.1.10\",\n  \"dst\": \"192.168.1.20\",\n  \"proto\": \"TCP\",\n  \"port\": 443,\n  \"bytes\": 1500,\n  \"pkts\": 12,\n  \"dur\": 1.25,\n  \"ttl\": 64,\n  \"retrans\": 0,\n  \"iat\": 0.08\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected 200, 501, or 503', function () { pm.expect([200, 501, 503]).to.include(pm.response.code); });",
+                  "pm.test('Response is JSON', function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid protocol - validation test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/predict",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "predict"
+              ]
+            },
+            "description": "Kiểm tra proto chỉ nhận TCP, UDP hoặc ICMP.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"src\": \"192.168.1.10\",\n  \"dst\": \"192.168.1.20\",\n  \"proto\": \"SCTP\",\n  \"port\": 443,\n  \"bytes\": 1500,\n  \"pkts\": 12,\n  \"dur\": 1.25,\n  \"ttl\": 64,\n  \"retrans\": 0,\n  \"iat\": 0.08\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Invalid protocol returns 422', function () { pm.response.to.have.status(422); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Feedback",
+      "item": [
+        {
+          "name": "Submit benign feedback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/flows/{{flowId}}/feedback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "flows",
+                "{{flowId}}",
+                "feedback"
+              ]
+            },
+            "description": "Gửi phản hồi benign. Đổi flowId thành ID thực tế nếu cần.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"benign\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected 200, 201, or 501', function () { pm.expect([200, 201, 501]).to.include(pm.response.code); });",
+                  "pm.test('Response is JSON', function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Submit attack feedback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/flows/{{flowId}}/feedback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "flows",
+                "{{flowId}}",
+                "feedback"
+              ]
+            },
+            "description": "Ví dụ gửi phản hồi attack.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"attack\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Expected 200, 201, or 501', function () { pm.expect([200, 201, 501]).to.include(pm.response.code); });",
+                  "pm.test('Response is JSON', function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid feedback label - validation test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/flows/{{flowId}}/feedback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "flows",
+                "{{flowId}}",
+                "feedback"
+              ]
+            },
+            "description": "Kiểm tra label chỉ nhận benign, attack hoặc unset.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"malware\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Invalid label returns 422', function () { pm.response.to.have.status(422); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
