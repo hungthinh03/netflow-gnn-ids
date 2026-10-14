@@ -21,3 +21,15 @@ SC.forEach(([src,dst,proto,port,n,lo,hi,type,bm])=>{for(let i=0;i<n;i++){
     ttl:pick([64,128,254]),flags:recon?'SYN':'SYN,ACK,PSH,FIN',retrans:recon?0:Math.floor(rnd()*4),
     iat:Math.floor(recon?rnd()*20:20+rnd()*400),p:+(lo+rnd()*(hi-lo)).toFixed(2),type,fp:false})}});
 flows.sort((a,b)=>a.ago-b.ago);
+
+let flows = [];
+let T0 = Date.now();
+
+async function loadFlows(window = "30m") {
+  const result = await API.flows(window);
+
+  flows = result.items;
+  T0 = Date.now();
+
+  return result;
+}
