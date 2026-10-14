@@ -1,0 +1,10 @@
+{
+  "name": "netflow-hostgraph-ids-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dashboard giám sát NetFlow Host-Graph IDS (HTML/CSS/JS thuần, không cần build)",
+  "scripts": {
+    "dev": "npx --yes http-server . -p 5173 -c-1 -o",
+    "start": "npm run dev"
+  }
+}

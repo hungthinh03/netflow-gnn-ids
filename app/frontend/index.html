@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NetFlow Host-Graph IDS - Dashboard (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><line x1="8" y1="9" x2="22" y2="8" stroke="#8794A3" stroke-width="2"/><line x1="8" y1="9" x2="14" y2="23" stroke="#8794A3" stroke-width="2"/><line x1="22" y1="8" x2="14" y2="23" stroke="#C62F2F" stroke-width="2"/><circle cx="8" cy="9" r="4.5" fill="#14202B"/><circle cx="22" cy="8" r="4.5" fill="#14202B"/><circle cx="14" cy="23" r="4.5" fill="#C62F2F"/></svg>
+    <div><strong>NetFlow Host-Graph IDS</strong><span>Giám sát luồng mạng theo đồ thị host</span></div>
+  </div>
+  <div class="ctl">
+    <span class="pill">Dữ liệu mẫu</span>
+    <span>Mô hình: GraphSAGE (checkpoint mẫu)</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="scope">
+    <span>Cửa sổ thời gian</span>
+    <div class="seg" id="wseg" role="group" aria-label="Cửa sổ thời gian">
+      <button data-act="win" data-v="300" aria-pressed="false">5 phút</button>
+      <button data-act="win" data-v="1800" aria-pressed="true">30 phút</button>
+      <button data-act="win" data-v="3600" aria-pressed="false">1 giờ</button>
+    </div>
+    <span class="sub">Áp dụng cho chỉ số, biểu đồ và bảng bên dưới</span>
+  </div>
+  <section class="card strip" id="kpis"></section>
+  <div class="top2">
+    <section class="card">
+      <div class="hd"><h2 id="ch">Cảnh báo tấn công theo phút</h2><span class="sub" id="csub"></span></div>
+      <p class="csum" id="csum"></p>
+      <svg id="chart" viewBox="0 0 640 160" role="img" aria-label="Biểu đồ số flow bị đánh dấu tấn công theo thời gian"></svg>
+      <div class="lg"><span><i style="background:var(--atk)"></i>Flow bị đánh dấu tấn công (điểm từ ngưỡng cảnh báo trở lên)</span><span>Rê chuột vào cột để xem tổng flow và tỉ lệ</span></div>
+    </section>
+    <section class="card">
+      <div class="hd"><h2>Danh sách chặn</h2></div>
+      <ul id="bl"></ul>
+    </section>
+  </div>
+  <section class="card tblcard">
+    <div class="hd">
+      <div><h2>Luồng mạng gần đây</h2><span class="sub" id="cnt"></span></div>
+      <div class="tools">
+        <div class="seg" id="vseg"><button data-act="view" data-v="g" aria-pressed="true">Cảnh báo gộp</button><button data-act="view" data-v="f" aria-pressed="false">Từng flow</button></div>
+        <input id="q" placeholder="Lọc theo IP" aria-label="Lọc theo IP">
+        <div class="seg" id="seg">
+          <button data-act="filter" data-v="all" aria-pressed="true">Tất cả</button>
+          <button data-act="filter" data-v="atk" aria-pressed="false">Tấn công</button>
+          <button data-act="filter" data-v="ok" aria-pressed="false">Bình thường</button>
+        </div>
+      </div>
+    </div>
+    <div class="thrbar">
+      <span>Ngưỡng cảnh báo <b style="color:var(--ink)">0,65</b>: cố định, chọn trên tập validation.</span>
+      <span class="sub">Số liệu mẫu trên validation: Precision 0,93, Recall 0,84, FPR 0,8%.</span>
+    </div>
+    <div class="tw"><table>
+      <thead id="thead"></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+  </section>
+</main>
+
+<aside id="drawer" aria-label="Chi tiết flow"></aside>
+<dialog id="dlg">
+  <form method="dialog">
+    <h3 id="dt">Xử lý nguồn tấn công</h3><p class="mut" id="dp"></p>
+    <label>Đối tượng xử lý<select id="dtg"></select></label>
+    <p class="mut" id="dh"></p>
+    <label>Lý do<input id="dr"></label>
+    <label>Thời gian áp dụng<select id="dd"><option value="3600">1 giờ</option><option value="86400" selected>24 giờ</option><option value="0">Không giới hạn</option></select></label>
+    <div class="act"><button value="cancel" class="btn">Hủy</button><button value="ok" class="btn danger" id="dok">Xác nhận</button></div>
+  </form>
+</dialog>
+<div id="toast" role="status"></div>
+
+<script src="js/api.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
